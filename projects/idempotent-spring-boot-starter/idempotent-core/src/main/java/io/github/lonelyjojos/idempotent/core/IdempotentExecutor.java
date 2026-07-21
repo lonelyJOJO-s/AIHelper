@@ -15,8 +15,18 @@ public class IdempotentExecutor {
     }
 
     public <T> T execute(IdempotentCommand command, Supplier<T> action) {
-        // TODO learner 完成抢占、重复判断、业务执行以及成功或失败后的状态收尾
-        throw new UnsupportedOperationException("implement IdempotentExecutor.execute");
+        AcquireResult result = repository.tryAcquire(command.storageKey(), command.ttl());
+        if (!result.acquired()) {
+            throw new DuplicateExecutionException(command.storageKey());
+        }
+        try {
+            T value = action.get();
+            repository.markSucceeded(command.storageKey(), result.ownerToken(), command.ttl());
+            return value;
+        } catch (RuntimeException | Error e) {
+            repository.release(command.storageKey(), result.ownerToken());
+            throw e;
+        }
     }
 }
 

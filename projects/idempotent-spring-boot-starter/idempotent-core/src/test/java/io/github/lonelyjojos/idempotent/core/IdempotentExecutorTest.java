@@ -1,7 +1,6 @@
 package io.github.lonelyjojos.idempotent.core;
 
 import io.github.lonelyjojos.idempotent.core.memory.InMemoryIdempotentRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -11,8 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class IdempotentExecutorTest {
-
-    @Disabled("TODO learner 完成 IdempotentExecutor 后启用")
     @Test
     void shouldExecuteActionOnlyOnceForSameKey() {
         IdempotentExecutor executor = new IdempotentExecutor(new InMemoryIdempotentRepository());
@@ -28,7 +25,6 @@ class IdempotentExecutorTest {
         assertEquals(1, executions.get());
     }
 
-    @Disabled("TODO learner 完成失败释放策略后启用")
     @Test
     void shouldAllowRetryAfterActionFailure() {
         IdempotentExecutor executor = new IdempotentExecutor(new InMemoryIdempotentRepository());
