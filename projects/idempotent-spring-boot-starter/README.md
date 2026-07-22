@@ -37,13 +37,13 @@ mvn test
 
 ## 你的三个核心练习
 
-按顺序完成，每完成一个就删除对应测试上的 `@Disabled`：
+第一版已经完成这三块核心逻辑：
 
 1. `InMemoryIdempotentRepository`：使用线程安全结构实现原子抢占、成功标记和释放。
 2. `IdempotentExecutor`：完成“抢占 → 执行业务 → 成功/失败收尾”的状态流转。
 3. `SpelIdempotentKeyResolver`：从方法参数中解析 SpEL 表达式并生成稳定 Key。
 
-搜索所有练习位置：
+检查是否还有练习留白：
 
 ```bash
 rg "TODO learner" .
@@ -74,6 +74,22 @@ curl "http://localhost:8080/orders/demo-001"
 
 第一次调用核心 TODO 尚未完成时返回错误是预期行为。实现三个练习后，同一个 `demo-001` 的第二次调用应被识别为重复执行。
 
+## Redis 仓储
+
+默认仍使用单进程内存仓储。需要切到 Redis 时增加配置：
+
+```properties
+idempotent.repository=redis
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+```
+
+Redis 版使用 Lua 脚本保证 `tryAcquire`、`markSucceeded`、`release` 的 ownerToken 判断和写入/删除是原子的。真实 Redis 契约测试基于 Testcontainers，启动 Docker 后运行：
+
+```bash
+mvn -pl idempotent-spring-boot-starter -Dtest=RedisIdempotentRepositoryTest test
+```
+
 ## 当前范围
 
-第一阶段只实现内存版，重点学清楚契约、状态和并发。Redis、结果复用、续租、监控指标都留到后续迭代，不提前堆进骨架。
+当前已经包含内存版和 Redis 版仓储。结果复用、续租、监控指标都留到后续迭代。
