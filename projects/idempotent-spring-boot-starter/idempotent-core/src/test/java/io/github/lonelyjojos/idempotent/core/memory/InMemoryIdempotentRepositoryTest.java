@@ -12,8 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class InMemoryIdempotentRepositoryTest {
 
     private static final Duration TTL = Duration.ofMinutes(10);
-
-    @Disabled("TODO learner 完成 InMemoryIdempotentRepository 后启用")
     @Test
     void shouldRejectSecondAcquireUntilReleased() {
         InMemoryIdempotentRepository repository = new InMemoryIdempotentRepository();
