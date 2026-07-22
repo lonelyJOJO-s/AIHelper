@@ -1,0 +1,13 @@
+.DS_Store
+
+# IDE files
+.idea/
+*.iml
+
+# Java / Maven
+target/
+
+# Go
+bin/
+*.test
+coverage.out
