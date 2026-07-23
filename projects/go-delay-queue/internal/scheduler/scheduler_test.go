@@ -19,6 +19,7 @@ func TestCancelMarksPendingJobCanceled(t *testing.T) {
 	s.now = func() time.Time {
 		return canceledAt
 	}
+	st.SetNow(s.now)
 	j := job.Job{
 		ID:        "job-1",
 		Name:      "demo",

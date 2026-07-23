@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/lonelyJOJO-s/AIHelper/projects/go-delay-queue/internal/job"
 )
@@ -10,12 +11,21 @@ import (
 type MemoryStore struct {
 	mu   sync.RWMutex
 	jobs map[string]job.Job
+	now  func() time.Time
 }
 
 func NewMemoryStore() *MemoryStore {
 	return &MemoryStore{
 		jobs: make(map[string]job.Job),
+		now:  time.Now,
 	}
+}
+
+func (s *MemoryStore) SetNow(now func() time.Time) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.now = now
 }
 
 func (s *MemoryStore) Create(_ context.Context, j job.Job) error {
@@ -55,6 +65,7 @@ func (s *MemoryStore) Update(_ context.Context, j job.Job) error {
 	if _, ok := s.jobs[j.ID]; !ok {
 		return ErrNotFound
 	}
+	j.UpdatedAt = s.now().UTC()
 	s.jobs[j.ID] = j
 	return nil
 }
